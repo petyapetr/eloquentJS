@@ -43,6 +43,8 @@ function countBy(items, groupName) {
 console.log(dominantDirection("Hello!"));
 // → ltr
 console.log(dominantDirection("Hey, ꡁꡁꡁꡁꡁꡁꡁꡁꡁꡁꡁꡁꡁꡁꡁꡁꡁꡁꡁꡁꡁꡁꡁꡁꡁꡁꡁꡁꡁꡁꡁꡁꡁꡁꡁꡁ, مساء الخير"));
+// → ttb
+console.log(dominantDirection("Hey, مساء الخير"));
 // → rtl
 
 
