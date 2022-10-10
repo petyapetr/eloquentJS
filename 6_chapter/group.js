@@ -29,11 +29,31 @@ class Group {
 		}
 		return self
 	}
+
+	[Symbol.iterator]() {
+		return new GroupIterator(this.set)
+	}
 }
 
-//tests
+class GroupIterator {
+	constructor(group) {
+		this.index = 0
+		this.group = group
+	}
 
-let group = Group.from([10, 20]);
+	next() {
+		if (this.index === this.group.length) return {done: true}
+		if (this.index < this.group.length) {
+			let value = this.group[this.index]
+			this.index++
+			return {value, done: false}
+		}
+	}
+}
+
+//tests for group exercise
+
+/* let group = Group.from([10, 20]);
 console.log(group.has(10));
 // → true
 console.log(group.has(30));
@@ -41,4 +61,13 @@ console.log(group.has(30));
 group.add(10);
 group.delete(10);
 console.log(group.has(10));
-// → false
+// → false */
+
+//tests for itterartor exercise
+
+for (let value of Group.from(["a", "b", "c"])) {
+  console.log(value);
+}
+// → a
+// → b
+// → c
