@@ -1,6 +1,6 @@
 // code from the book
 
-var roads = [
+const roads = [
   "Alice's House-Bob's House",   "Alice's House-Cabin",
   "Alice's House-Post Office",   "Bob's House-Town Hall",
   "Daria's House-Ernie's House", "Daria's House-Town Hall",
@@ -26,7 +26,7 @@ function buildGraph(edges) {
   return graph;
 }
 
-let roadGraph = buildGraph(roads);
+const roadGraph = buildGraph(roads);
 
 let VillageState = class VillageState {
   constructor(place, parcels) {
@@ -48,7 +48,7 @@ let VillageState = class VillageState {
 }
 
 function runRobot(state, robot, memory) {
-  for (let turn = 0; ; turn++) {
+  for (let turn = 0;; turn++) {
     if (state.parcels.length == 0) {
       console.log(`Done in ${turn} turns`);
       break;
@@ -76,12 +76,10 @@ VillageState.random = function(parcelCount = 5) {
     let place;
     do {
       place = randomPick(Object.keys(roadGraph));
-    } while (place == address);
+    } while (place === address);
     parcels.push({place, address});
   }
-
 	let start = randomPick(Object.keys(roadGraph))
-
   return new VillageState(start, parcels);
 };
 
@@ -93,7 +91,7 @@ const mailRoute = [
 ];
 
 function routeRobot(state, memory) {
-  if (memory.length === 0) {
+  if (memory.length == 0) {
     memory = mailRoute;
   }
   return {direction: memory[0], memory: memory.slice(1)};
@@ -125,38 +123,63 @@ function goalOrientedRobot({place, parcels}, route) {
 }
 
 // 1 task «compare robots»
-
 function compareRobots(robot1, memory1, robot2, memory2) {
-
 	// task generator
 	function randomParcelCount(arr) {
 		return Math.ceil(Math.random() * arr.length)
 	}
 	const tasks = []
 
-	for (let i = 0; i < 2; i++) {
+	for (let i = 0; i < 100; i++) {
 		let state = VillageState.random(randomParcelCount(Object.keys(roadGraph)))
 		tasks.push({index: i, state})
 	}
 
-	/*// task verify (optional)
-		tasks.forEach(t => {
-			console.log(`${t.index} – start: ${t.state.place}`)
-			// console.log(`parcels: ${JSON.stringify(t.state.parcels)}`)
-		}) */
-
+	// run function
+	function testRun(state, robot, memory) {
+		for (turn = 0; ; turn++) {
+			if (state.parcels.length === 0) {
+				return turn
+			}
+			let action = robot(state, memory)
+			state = state.move(action.direction)
+			memory = action.memory
+		}
+	}	
+		
 	// robots run
 	const results1 = []
+	const results2 = []
 
 	for (let t of tasks) {
-		let result = runRobot(t.state, robot1, memory1)
-		results1.push(result)
+		const result1 = testRun(t.state, robot1, memory1)
+		const result2 = testRun(t.state, robot2, memory2)
+		results1.push(result1)
+		results2.push(result2)
 	}
 
 	// results comparassion
-	console.log(results1)
+	function findAverage(acc, item, index, arr) {
+		acc += item
+		if (index === arr.length - 1) {
+			return acc / arr.length
+		}
+		return acc
+	}
+	const average1 = results1.reduce(findAverage, 0)
+	const average2 = results2.reduce(findAverage, 0)
+	let verdict = average1 < average2
+
 	// final verdict
+	console.log(`Results are: 1 = ${average1}, 2 = ${average2}`)
+	if (average1 === average2) {return console.log('Robots are equal')}
+	if (verdict) {return console.log(`First robot is more efficient, with average steps number: ${average1}`)} else {
+		return console.log(`Second robot is more efficient, with average steps number: ${average2}`)
+	}
 }
 
+
+
 // tests
-compareRobots(routeRobot(), [], goalOrientedRobot(), []);
+// compareRobots(routeRobot, [], goalOrientedRobot, [])
+// compareRobots(goalOrientedRobot, [], improvedRobot, ())
