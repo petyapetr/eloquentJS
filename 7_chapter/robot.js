@@ -1,4 +1,4 @@
-// code from the book
+// code from the book (with minor tweaks)
 
 const ROADS = [
   "Alice's House-Bob's House",   "Alice's House-Cabin",
@@ -9,6 +9,17 @@ const ROADS = [
   "Marketplace-Post Office",     "Marketplace-Shop",
   "Marketplace-Town Hall",       "Shop-Town Hall"
 ];
+
+function robotName(robot) {
+  switch(robot) {
+    case routeRobot: 
+      return 'Route'
+    case goalOrientedRobot:
+      return 'Goal Oriented'
+    case improvedRobot:
+      return 'Improved'
+  }
+}
 
 function buildGraph(edges) {
   let graph = Object.create(null);
@@ -35,7 +46,7 @@ class VillageState {
     this.parcels = parcels;
   }
 
-  move(destination) {
+  move(destination, NAME) {
     if (!ROAD_GRAPH[this.place].includes(destination)) {
       return this;
     } else {
@@ -141,21 +152,21 @@ function actionRobot(state, robot, memory) {
 	}
 }
 
-function compareRobots(robot1, memory1, robot2, memory2, amount) {
+function compareRobots(robot1, memory1, robot2, memory2, amount, multiplier) {
 	// task generator
   const tasks = []
 	for (let i = 0; i < amount; i++) {
-    let state = VillageState.randomState(VILLAGE_ATTRACTIONS)
-		tasks.push({index: i, state})
+    let state = VillageState.randomState(VILLAGE_ATTRACTIONS, multiplier)
+		tasks.push(state)
 	}
 
 	// robots perform tasks
 	const results1 = []
 	const results2 = []
 
-	for (let t of tasks) {
-		const result1 = actionRobot(t.state, robot1, memory1)
-		const result2 = actionRobot(t.state, robot2, memory2)
+	for (t of tasks) {
+		const result1 = actionRobot(t, robot1, memory1)
+		const result2 = actionRobot(t, robot2, memory2)
 		results1.push(result1)
 		results2.push(result2)
 	}
@@ -170,37 +181,60 @@ function compareRobots(robot1, memory1, robot2, memory2, amount) {
 	}
 	const average1 = results1.reduce(findAverage, 0)
 	const average2 = results2.reduce(findAverage, 0)
-	let verdict = average1 < average2
+	let result = (average1 < average2) ? 
+    {
+      winner: {
+        robot: robot1, average: average1
+      }, 
+      loser: {
+        robot: robot2, average: average2
+      }
+    } : {
+      winner: {
+        robot: robot2, average: average2
+      }, 
+      loser: {
+        robot: robot1, average: average1
+      }
+    }
 
-	// final verdict
-	console.log(`Results are: 1 = ${average1}, 2 = ${average2}`)
-	if (average1 === average2) {return console.log('Robots are equal')}
-	if (verdict) {
-    return console.log(
-        `First robot is more efficient, with average steps rate: ${average1}`
-    )
-  } else {
-		return console.log(
-        `Second robot is more efficient, with average steps rate: ${average2}`
-    )
-	}
+  return result
 }
 
+function renderResults(result) {
+  const {winner, loser} = result
+  const winnerName = robotName(winner.robot) + " Robot"
+  const loserName = robotName(loser.robot) + " Robot"
+	console.log(`"${winnerName}" is more efficient then "${loserName}", with average step nuber of ${winner.average} & ${loser.average} accordingly`)
+}
 
 // 2 task «robot efficiency»
-	// additional observation func
-	function runRobotAnimation() {
-		
-	}
 
-function improvedRobot() {}
+function findShortestRoute(acc, item) {
+  acc = (acc.length < item.length) ? acc : item
+  return acc
+}
+
+function improvedRobot(state, route) {
+  let {place, parcels} = state;
+  let routes = []
+
+  for (let p of parcels) {
+    const whereToGo = (p.place === place) ? p.address : p.place;
+    let way = findRoute(ROAD_GRAPH, place, whereToGo)
+    routes.push(way)
+  }
+
+  route = routes.reduce(findShortestRoute)
+  return {direction: route[0], memory: route.slice(1)}
+}
 
 // tests
-compareRobots(routeRobot, [], goalOrientedRobot, [], 100)
 
-/* const testParcelCount = randomParcelCount(VILLAGE_ATTRACTIONS)
-const testState = VillageState.random(testParcelCount)
+const test1 = compareRobots(routeRobot, [], goalOrientedRobot, [], 100, 2)
+const test2 = compareRobots(routeRobot, [], improvedRobot, [], 100, 2)
+const test3 = compareRobots(goalOrientedRobot, [], improvedRobot, [], 100, 2)
 
-actionRobot(testState, goalOrientedRobot, []) */
-
-// compareRobots(goalOrientedRobot, [], improvedRobot, [], 100)
+renderResults(test1)
+renderResults(test2)
+renderResults(test3)
