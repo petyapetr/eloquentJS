@@ -27,6 +27,7 @@ function buildGraph(edges) {
 }
 
 const ROAD_GRAPH = buildGraph(ROADS);
+const VILLAGE_ATTRACTIONS = Object.keys(ROAD_GRAPH)
 
 class VillageState {
   constructor(place, parcels) {
@@ -46,7 +47,22 @@ class VillageState {
     }
   }
 
-  static 
+  static randomState(attractions, multiplier = 1) {
+    const parcelCount = Math.ceil(Math.random() * attractions.length) * multiplier
+
+    let parcels = [];
+    for (let i = 0; i < parcelCount; i++) {
+      let address = randomPick(attractions);
+      let place;
+      do {
+        place = randomPick(attractions);
+      } while (place === address);
+      parcels.push({place, address});
+    }
+
+    const start = randomPick(attractions)
+    return new VillageState(start, parcels)
+  }
 }
 
 function runRobot(state, robot, memory) {
@@ -70,20 +86,6 @@ function randomPick(array) {
 function randomRobot(state) {
   return {direction: randomPick(ROAD_GRAPH[state.place])};
 }
-/* 
-VillageState.random = function(parcelCount = 5) {
-  let parcels = [];
-  for (let i = 0; i < parcelCount; i++) {
-    let address = randomPick(Object.keys(ROAD_GRAPH));
-    let place;
-    do {
-      place = randomPick(Object.keys(ROAD_GRAPH));
-    } while (place === address);
-    parcels.push({place, address});
-  }
-	let start = randomPick(Object.keys(ROAD_GRAPH))
-  return new VillageState(start, parcels);
-}; */
 
 const MAIL_ROUTE = [
   "Alice's House", "Cabin", "Alice's House", "Bob's House",
@@ -127,11 +129,6 @@ function goalOrientedRobot({place, parcels}, route) {
 
 // 1 task «compare robots»
 
-function randomParcelCount(arr) {
-  return Math.ceil(Math.random() * arr.length)
-}
-
-
 // run function
 function actionRobot(state, robot, memory) {
 	for (turn = 0; ; turn++) {
@@ -140,7 +137,6 @@ function actionRobot(state, robot, memory) {
 		}
 		let action = robot(state, memory)
 		state = state.move(action.direction)
-    console.log(action.direction)
 		memory = action.memory
 	}
 }
@@ -149,11 +145,9 @@ function compareRobots(robot1, memory1, robot2, memory2, amount) {
 	// task generator
   const tasks = []
 	for (let i = 0; i < amount; i++) {
-		// let state = VillageState.random(randomParcelCount(Object.keys(ROAD_GRAPH)))
+    let state = VillageState.randomState(VILLAGE_ATTRACTIONS)
 		tasks.push({index: i, state})
 	}
-
-  console.log(tasks)
 
 	// robots perform tasks
 	const results1 = []
@@ -183,11 +177,11 @@ function compareRobots(robot1, memory1, robot2, memory2, amount) {
 	if (average1 === average2) {return console.log('Robots are equal')}
 	if (verdict) {
     return console.log(
-        `First robot is more efficient, with average steps number: ${average1}`
+        `First robot is more efficient, with average steps rate: ${average1}`
     )
   } else {
 		return console.log(
-        `Second robot is more efficient, with average steps number: ${average2}`
+        `Second robot is more efficient, with average steps rate: ${average2}`
     )
 	}
 }
@@ -202,12 +196,11 @@ function compareRobots(robot1, memory1, robot2, memory2, amount) {
 function improvedRobot() {}
 
 // tests
-// compareRobots(routeRobot, [], goalOrientedRobot, [], 100)
+compareRobots(routeRobot, [], goalOrientedRobot, [], 100)
 
-const ROAD_KEYS = Object.keys(ROAD_GRAPH)
-const testParcelCount = randomParcelCount(ROAD_KEYS)
+/* const testParcelCount = randomParcelCount(VILLAGE_ATTRACTIONS)
 const testState = VillageState.random(testParcelCount)
 
-actionRobot(testState, goalOrientedRobot, [])
+actionRobot(testState, goalOrientedRobot, []) */
 
 // compareRobots(goalOrientedRobot, [], improvedRobot, [], 100)
