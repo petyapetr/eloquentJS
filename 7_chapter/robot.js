@@ -10,17 +10,6 @@ const ROADS = [
   "Marketplace-Town Hall",       "Shop-Town Hall"
 ];
 
-function robotName(robot) {
-  switch(robot) {
-    case routeRobot: 
-      return 'Route'
-    case goalOrientedRobot:
-      return 'Goal Oriented'
-    case improvedRobot:
-      return 'Improved'
-  }
-}
-
 function buildGraph(edges) {
   let graph = Object.create(null);
   function addEdge(from, to) {
@@ -40,13 +29,25 @@ function buildGraph(edges) {
 const ROAD_GRAPH = buildGraph(ROADS);
 const VILLAGE_ATTRACTIONS = Object.keys(ROAD_GRAPH)
 
+// register robot's names
+function robotName(robot) {
+  switch(robot) {
+    case routeRobot: 
+      return 'Route'
+    case goalOrientedRobot:
+      return 'Goal Oriented'
+    case arrayRobot:
+      return 'Improved'
+  }
+}
+
 class VillageState {
   constructor(place, parcels) {
     this.place = place;
     this.parcels = parcels;
   }
 
-  move(destination, NAME) {
+  move(destination) {
     if (!ROAD_GRAPH[this.place].includes(destination)) {
       return this;
     } else {
@@ -145,10 +146,10 @@ function actionRobot(state, robot, memory) {
 	for (turn = 0; ; turn++) {
 		if (state.parcels.length === 0) {
 			return turn
-		}
-		let action = robot(state, memory)
-		state = state.move(action.direction)
-		memory = action.memory
+		};
+		let action = robot(state, memory);
+		state = state.move(action.direction);
+		memory = action.memory;
 	}
 }
 
@@ -211,11 +212,16 @@ function renderResults(result) {
 // 2 task «robot efficiency»
 
 function findShortestRoute(acc, item) {
-  acc = (acc.length < item.length) ? acc : item
-  return acc
+  acc = (acc.length < item.length) ? acc : item;
+  return 
 }
 
-function improvedRobot(state, route) {
+/* function findShortestPickUpRoute(acc, item) {
+  acc = (acc.length > item.length) ? item 
+    : (acc.length === item.length) ?
+} */
+
+/* function arrayRobot(state, route) {
   let {place, parcels} = state;
   let routes = []
 
@@ -226,15 +232,32 @@ function improvedRobot(state, route) {
   }
 
   route = routes.reduce(findShortestRoute)
+  console.log(route)
+  return {direction: route[0], memory: route.slice(1)}
+}; */
+
+function arrayRobot(state, route) {
+  let {place, parcels} = state;
+  let routes = []
+
+  for (let p of parcels) {
+    const whereToGo = (p.place === place) ? p.address : p.place;
+    let way = findRoute(ROAD_GRAPH, place, whereToGo);
+    
+    routes.push({'Parcel': p, way});
+  }
+  console.log(routes);
+  route = routes.reduce(findShortestRoute(), []);
+  // console.log(route);
   return {direction: route[0], memory: route.slice(1)}
 }
 
 // tests
 
-const test1 = compareRobots(routeRobot, [], goalOrientedRobot, [], 100, 2)
-const test2 = compareRobots(routeRobot, [], improvedRobot, [], 100, 2)
-const test3 = compareRobots(goalOrientedRobot, [], improvedRobot, [], 100, 2)
+// const test1 = compareRobots(routeRobot, [], goalOrientedRobot, [], 100, 2)
+// const test2 = compareRobots(routeRobot, [], arrayRobot, [], 100, 2)
+const test3 = compareRobots(goalOrientedRobot, [], arrayRobot, [], 1, 1)
 
-renderResults(test1)
-renderResults(test2)
+// renderResults(test1);
+// renderResults(test2);
 renderResults(test3)
