@@ -1,7 +1,5 @@
 // code from the book (with minor tweaks)
 
-import ROAD_GRAPH_1 from '../graph.js'
-
 const ROADS = [
   "Alice's House-Bob's House",   "Alice's House-Cabin",
   "Alice's House-Post Office",   "Bob's House-Town Hall",
@@ -267,5 +265,4 @@ function arrayRobot(state, route) {
 
 
 
-console.log(ROAD_GRAPH_1)
 console.log(ROAD_GRAPH)
