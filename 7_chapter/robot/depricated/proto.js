@@ -1,4 +1,4 @@
-import { VillageState } from "./state.js";
+import { VillageState } from "./../state.js";
 
 const state = new VillageState(
 	"Grete's House",
@@ -10,7 +10,7 @@ const state = new VillageState(
 );
 
 console.log(state);
-state.test('Proto works');
+// state.test('Proto works');
 const newState = state.move("Ernie's House");
 console.log(newState)
 

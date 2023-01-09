@@ -146,7 +146,7 @@ function goalOrientedRobot({place, parcels}, route) {
 function actionRobot(state, robot, memory) {
 	for (turn = 0; ; turn++) {
 		if (state.parcels.length === 0) {
-			return turn
+			return turn;
 		};
 		let action = robot(state, memory);
 		state = state.move(action.direction);

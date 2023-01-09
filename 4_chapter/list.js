@@ -81,8 +81,15 @@ function nthRecursion(list, num) {
 	if (num === 0) {
 		return list.value
 	} else if (num > 0 && list.rest) {
-		// return nthRecursion(list.rest, num - 1) // работает
-		//return nthRecursion(list.rest, num -= 1) // работает
+		// return nthRecursion(list.rest, num - 1); // работает
+
+		//return nthRecursion(list.rest, num -= 1); // работает
+
+		/* num--;
+		return nthRecursion(list.rest, num); // работает */
+
+		// return nthRecursion(list.rest, --num); // работает
+
 		return nthRecursion(list.rest, num--) // не работает
 	} else {
 		return undefined

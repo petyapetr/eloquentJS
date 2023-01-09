@@ -15,7 +15,7 @@ roadGraph.forEach((value, key) => attractions.push(key));
 function buildGraph(arr) {
 	let graph = new Map();
 	for (let a of arr) {
-		a = a.split('-');
+		a = a.split("-");
 		if (!graph.has(a[0])) {
 			graph.set(a[0], []);
 		}
@@ -36,13 +36,13 @@ class VillageState {
 	}
 
 	move(destination) {
-		if (roadGraph.has(roadGraph.get(this.place).includes(destination))) {
+		if (!roadGraph.get(this.place).includes(destination)) {
 			return this
 		} else {
-			const parcels = this.parcels.map((p) => {
-				if (!p.plaсe === this.place) return p;
+			let parcels = this.parcels.map((p) => {
+				if (p.plaсe !== this.place) return p;
 				return {place: destination, adress: p.adress};
-			}).filter((p) => p.adress !== destination);
+			}).filter((p) => p.place !== p.address);
 			return new VillageState(destination, parcels);
 		}
 	}
@@ -60,7 +60,7 @@ class VillageState {
 		}
 
 		const start = randomPick(attractions); 
-		return {place: start, parcels: parcels};
+		return new VillageState(start, parcels);
 	}
 }
 
@@ -79,4 +79,8 @@ function randomPick(arr) {
 	return arr[j]; // наверное, это лучший вариант
 }
 
-export {VillageState, randomPick, attractions};
+const randomState = VillageState.randomState(attractions);
+
+console.log(roadGraph.get(randomState.place));
+
+export { VillageState, randomPick, attractions, randomState, roadGraph };
