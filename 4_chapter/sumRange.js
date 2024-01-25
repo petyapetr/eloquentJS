@@ -7,7 +7,7 @@ console.log(`Reverse range with a step-fullfilment from 5 to 2: ${range(5, 2, -1
 console.log(`Summary of a simple range: ${sum(range(1, 10))}`)
 // → 55
 
-// мое решение черз костыли с определением шага
+// мое решение через костыли с определением шага
 /* function range(start, end, step) {
 	const arr = []
 	if (!step) step = 1
