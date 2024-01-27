@@ -30,8 +30,8 @@
 
 // Считаем бобы
 function countBs(str) {
-	counter = 0
-	for (i = 0; i < str.length; i++) {
+	let counter = 0
+	for (let i = 0; i < str.length; i++) {
 		if (str[i] === "B") counter++
 	}
 	return counter
@@ -39,8 +39,8 @@ function countBs(str) {
 console.log(countBs('BBC'))
 
 function countChar(str, letter) {
-	counter = 0
-	for (i = 0; i < str.length; i++) {
+	let counter = 0
+	for (let i = 0; i < str.length; i++) {
 		if (str[i] === letter) counter++
 	}
 	return counter
