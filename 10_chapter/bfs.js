@@ -64,3 +64,35 @@ function bfsRobot(params) {
 
 	return [memory[0], memory.slice(1)];
 }
+
+function improvedBfsRobot(params) {
+	let {state, memory, graph} = params;
+	const {place, parcels} = state;
+	// memory ??= [];
+
+	const routes = parcels.map((p) => {
+		let {from, to} = p;
+		let route = undefined;
+
+		if (from !== place) {
+			route = findRoute(graph, place, from);
+		} else {
+			route = findRoute(graph, place, to);
+		}
+
+		return route;
+	});
+
+	routes.sort((a, b) => a.length - b.length);
+	const shortest = routes[0].length;
+	const shortRoutes = routes.filter((r) => r.length === shortest);
+	let route = shortRoutes.find((r) => {
+		const last = r[r.length - 1];
+		return parcels.map((p) => p.from).includes(last);
+	});
+	route ??= shortRoutes[0];
+
+	return [route[1], route.slice(1)];
+}
+
+export {bfsRobot, improvedBfsRobot};

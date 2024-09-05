@@ -2,6 +2,7 @@ import {roadGraph} from "./road.js";
 import {createRandomState} from "./state.js";
 import {randomRobot} from "./randomRobot.js";
 import {mailRobot} from "./mailRobot.js";
+import {bfsRobot, improvedBfsRobot, improvedSmartBfsRobot} from "./bfs.js";
 
 function move(state, destination) {
 	const {place, parcels} = state;
@@ -20,7 +21,9 @@ function move(state, destination) {
 	return {place: destination, parcels: updatedParcels};
 }
 
-function run(state, func, memory) {
+function run(state, func) {
+	let memory;
+
 	for (let i = 0; ; ++i) {
 		if (state.parcels.length === 0) {
 			console.log(`Done in ${i} turns`);
@@ -36,9 +39,11 @@ function run(state, func, memory) {
 	}
 }
 
-const state = createRandomState(roadGraph);
+const state = createRandomState(roadGraph, 12);
 
 // Execution
 
 run(state, randomRobot);
 run(state, mailRobot);
+run(state, bfsRobot);
+run(state, improvedBfsRobot);
