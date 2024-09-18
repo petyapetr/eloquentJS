@@ -46,7 +46,7 @@ function soon(val) {
 Promise_all([soon(1), soon(2), soon(3)]).then((array) => {
 	console.log("This should be [1, 2, 3]:", array);
 });
-Promise_all([soon(1), Promise.doRej("X"), soon(3)])
+Promise_all([soon(1), Promise.reject("X"), soon(3)])
 	.then((array) => {
 		console.log("We should not get here");
 	})
