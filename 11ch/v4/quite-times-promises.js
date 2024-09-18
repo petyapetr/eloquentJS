@@ -1,26 +1,22 @@
 async function activityTable(day) {
-	const table = [];
-
 	return textFile("camera_logs.txt").then((fileList) => {
 		const promises = fileList.split("\n").map((name) =>
 			textFile(name).then((file) => {
-				return file.split("\n").map((stamp) => {
-					const date = new Date(stamp - 0);
-
-					if (date.getDay() === day) {
-						const hour = date.getHours();
-
-						if (!table[hour]) {
-							table[hour] = [];
-						}
-
-						table[hour].push(stamp);
-					}
-				});
+				return file
+					.split("\n")
+					.filter((stamp) => new Date(Number(stamp)).getDay() === day)
+					.map((stamp) => new Date(Number(stamp)).getHours());
 			})
 		);
 
-		return Promise.all(promises).then(() => table.map((arr) => arr.length));
+		return Promise.all(promises).then((res) => {
+			const hours = res.flat();
+			const table = [];
+			hours.map((el) => {
+				table[el] = table[el] ? ++table[el] : 1;
+			});
+			return table;
+		});
 	});
 }
 
